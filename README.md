@@ -1,0 +1,2 @@
+# fastcsv
+TypeScript library
