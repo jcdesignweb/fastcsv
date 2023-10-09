@@ -1,5 +1,5 @@
-import fs, { ReadStream } from "fs";
-import { isValidUrl, removeQuotes, sanitizeString } from "./utils/index.utils";
+import fs from "fs";
+import { removeQuotes, sanitizeString } from "./utils/index.utils";
 import https from "https";
 import streamToArray from "stream-to-array";
 import { Readable } from "stream";
@@ -33,6 +33,7 @@ const download = (url: string): Promise<Buffer> => {
           reject(new Error(ERROR_CODES.CONTENT_TYPE));
         }
 
+        // eslint-disable-next-line  @typescript-eslint/no-explicit-any
         const dataChunks: any = [];
         response.on("data", (chunk) => {
           dataChunks.push(chunk);
@@ -60,6 +61,7 @@ export default class FastCsv {
 
   private columns: string[] = [];
   private response: string[] = [];
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   private content: any;
 
   constructor(values?: DefaultValues) {
@@ -90,11 +92,12 @@ export default class FastCsv {
   }
 
   private async *procesarBufferCSV(fileStream: Readable) {
-    let chunkRemanente = null;
+    let remanentChunk = null;
 
     for await (const chunk of fileStream) {
-      const data: any = chunkRemanente
-        ? Buffer.concat([chunkRemanente, chunk])
+      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+      const data: any = remanentChunk
+        ? Buffer.concat([remanentChunk, chunk])
         : chunk;
       let startIndex = 0;
       let endIndex;
@@ -109,11 +112,11 @@ export default class FastCsv {
         yield linea;
       }
 
-      chunkRemanente = data.slice(startIndex);
+      remanentChunk = data.slice(startIndex);
     }
 
-    if (chunkRemanente && chunkRemanente.length > 0) {
-      yield chunkRemanente.toString(BUFFER_ENCONDING);
+    if (remanentChunk && remanentChunk.length > 0) {
+      yield remanentChunk.toString(BUFFER_ENCONDING);
     }
   }
 
