@@ -1,0 +1,46 @@
+{
+  "name": "fastcsv",
+  "version": "1.0.0",
+  "description": "TypeScript lib for download and monipulate/control csv files",
+  "main": "dist/index.js",
+  "module": "dist/index.d.mts",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup ./lib/index.ts --format cjs,esm --dts",
+    "lint": "tsc",
+    "ts-test": "ts-mocha -p ./tsconfig.json test/**/*.spec.ts",
+    "format": "prettier . --write",
+    "test": "ts-mocha ./test/basic.spec.ts --timeout 5000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jcdesignweb/fastcsv.git"
+  },
+  "keywords": [
+    "Csv",
+    "Fast",
+    "csv2json"
+  ],
+  "author": "Juan Andrés Carmena",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jcdesignweb/fastcsv/issues"
+  },
+  "homepage": "https://github.com/jcdesignweb/fastcsv#readme",
+  "devDependencies": {
+    "@types/mocha": "^10.0.2",
+    "@types/stream-to-array": "^2.3.1",
+    "eslint": "^8.48.0",
+    "prettier": "3.0.3",
+    "ts-mocha": "^10.0.0",
+    "ts-node": "^10.9.1",
+    "tsup": "^7.2.0",
+    "typescript": "^5.2.2",
+    "typescript-require": "^0.3.0"
+  },
+  "dependencies": {
+    "@types/node": "^20.5.7",
+    "stream-to": "^2.0.0",
+    "stream-to-array": "^2.3.0"
+  }
+}

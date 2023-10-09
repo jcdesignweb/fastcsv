@@ -1,0 +1,7 @@
+export enum ERROR_CODES {
+  DOWNLOADING = "DOWNLOADING_ERROR",
+  CONTENT_TYPE = "CONTENT_TYPE",
+  UNKNOWN = "UNKNOWN",
+  MULTIPLE_PARAMS = "MULTIPLE_PARAMS", // it's not  possible to choose url and filepath to process.
+  DATASOURCE_IS_MISSING = "DATASOURCE_IS_MISSING",
+}
