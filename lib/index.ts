@@ -1,15 +1,16 @@
 import fs from "fs";
-import { removeQuotes, sanitizeString } from "./utils/index.utils";
+import {
+  BREAK_LINE,
+  BUFFER_ENCONDING,
+  BUFFER_SIZE,
+  CSV_CONTENT_TYPE,
+  removeQuotes,
+  sanitizeString,
+} from "./utils/index.utils";
 import https from "https";
 import streamToArray from "stream-to-array";
 import { Readable } from "stream";
 import { ERROR_CODES } from "./utils/errors.utils";
-
-const BUFFER_ENCONDING = "utf-8" as BufferEncoding;
-const BREAK_LINE = "\n";
-const BUFFER_SIZE = 128 * 1024; // 128 KiB
-
-const CSV_CONTENT_TYPE = "text/csv";
 
 type DefaultValues = {
   chunkSize?: number;
@@ -54,13 +55,14 @@ const download = (url: string): Promise<Buffer> => {
   });
 };
 
-export default class FastCsv {
+export default class FastCSV {
   private props: DefaultValues = {
     chunkSize: BUFFER_SIZE,
   };
 
   private columns: string[] = [];
   private response: string[] = [];
+
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   private content: any;
 
@@ -79,7 +81,7 @@ export default class FastCsv {
   private async build() {
     let isFirst = true;
 
-    for await (const chunk of this.procesarBufferCSV(this.content)) {
+    for await (const chunk of this.processCSV(this.content)) {
       if (isFirst) {
         this.setColumns(chunk);
         isFirst = !isFirst;
@@ -91,10 +93,11 @@ export default class FastCsv {
     return this;
   }
 
-  private async *procesarBufferCSV(fileStream: Readable) {
+  private async *processCSV(fileStream: Readable) {
     let remanentChunk = null;
 
     for await (const chunk of fileStream) {
+
       // eslint-disable-next-line  @typescript-eslint/no-explicit-any
       const data: any = remanentChunk
         ? Buffer.concat([remanentChunk, chunk])
@@ -122,7 +125,7 @@ export default class FastCsv {
 
   private async fromPath() {
     if (this.props.filepath === undefined) {
-      return false;
+      return;
     }
 
     console.info("[FastCsv] -- getting content from file", this.props.filepath);
@@ -134,10 +137,11 @@ export default class FastCsv {
   }
 
   private async fromURL() {
-    console.info("[FastCsv] -- getting content from url", this.props);
     if (this.props.url === undefined) {
-      return false;
+      return;
     }
+
+    console.info("[FastCsv] -- getting content from url", this.props.url);
 
     const chunks = await download(this.props.url);
     this.content = chunks;
@@ -166,8 +170,6 @@ export const FastCsvParse = async (values?: DefaultValues) => {
     throw new Error(ERROR_CODES.DATASOURCE_IS_MISSING);
   }
 
-  const fast = new FastCsv(values);
-  await fast.process();
-
-  return fast;
+  const fast = new FastCSV(values);
+  return await fast.process();
 };

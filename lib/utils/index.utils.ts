@@ -1,3 +1,8 @@
+export const CSV_CONTENT_TYPE = "text/csv";
+export const BUFFER_SIZE = 128 * 1024; // 128 KiB
+export const BREAK_LINE = "\n";
+export const BUFFER_ENCONDING = "utf-8" as BufferEncoding;
+
 const isValidUrl = (value: string) => {
   const urlPattern = new RegExp(
     "^(https?:\\/\\/)?" +
