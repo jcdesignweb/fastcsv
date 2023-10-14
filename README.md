@@ -1,4 +1,4 @@
-# fastcsv
+# Fastcsv
 
 CSV to Array library for NodeJS
 you will be able to parse any csv file to get an array.
@@ -9,8 +9,53 @@ main features:
 - less memory costs
 - fast data types validations. (missing)
 
-# Author
+## Usage/Examples
+
+```javascript
+
+// using a filesystem path
+const filepath = 'YOURPATH/file.csv'
+const fastCsv = await FastCsvParse({ filepath });
+
+// using a url file
+// this will download the file to be parsed once finished
+const url = 'https://ckan-static-mock-harvest-source.cloudapps.digital/mock-third-party/example-dataset-1/all-categories-summary.csv'
+const fastCsv = await FastCsvParse({ url });
+
+```
+
+## Run Locally
+
+Clone the project
+
+```bash
+  git clone https://github.com/jcdesignweb/fastcsv.git
+  
+```
+
+Go to the project directory
+
+```bash
+  cd fastcsv
+```
+
+Install dependencies
+
+```bash
+  npm install
+```
+
+Run tests
+
+```bash
+  npm test
+```
+
+## Next features
+- adding filters
+- columns validation with types
+
+
+## Author
 
 Juan Andrés Carmena <juan14nob@gmail.com>
-
-CSV url: https://datos.santafe.gob.ar/dataset/86eb088e-b156-4eb1-9f16-33338aaabc03/resource/91d5162b-7851-47bb-9050-1146c4418d8c/download/municipalidades-y-comunas.csv
