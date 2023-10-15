@@ -12,16 +12,15 @@ main features:
 ## Usage/Examples
 
 ```javascript
-
 // using a filesystem path
-const filepath = 'YOURPATH/file.csv'
+const filepath = "YOURPATH/file.csv";
 const fastCsv = await FastCsvParse({ filepath });
 
 // using a url file
 // this will download the file to be parsed once finished
-const url = 'https://ckan-static-mock-harvest-source.cloudapps.digital/mock-third-party/example-dataset-1/all-categories-summary.csv'
+const url =
+  "https://ckan-static-mock-harvest-source.cloudapps.digital/mock-third-party/example-dataset-1/all-categories-summary.csv";
 const fastCsv = await FastCsvParse({ url });
-
 ```
 
 ## Run Locally
@@ -30,7 +29,7 @@ Clone the project
 
 ```bash
   git clone https://github.com/jcdesignweb/fastcsv.git
-  
+
 ```
 
 Go to the project directory
@@ -52,9 +51,9 @@ Run tests
 ```
 
 ## Next features
+
 - adding filters
 - columns validation with types
-
 
 ## Author
 
