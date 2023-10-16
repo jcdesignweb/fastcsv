@@ -4,4 +4,5 @@ export enum ERROR_CODES {
   UNKNOWN = "UNKNOWN",
   MULTIPLE_PARAMS = "MULTIPLE_PARAMS", // it's not  possible to choose url and filepath to process.
   DATASOURCE_IS_MISSING = "DATASOURCE_IS_MISSING",
+  COLUMNS_INVALID = "COLUMNS_INVALID",
 }

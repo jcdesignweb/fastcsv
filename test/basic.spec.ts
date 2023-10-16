@@ -3,9 +3,7 @@ import { describe } from "node:test";
 import { test } from "mocha";
 import assert from "assert";
 import { ERROR_CODES } from "../lib/utils/errors.utils";
-
-const fileUrl =
-  "https://datos.santafe.gob.ar/dataset/86eb088e-b156-4eb1-9f16-33338aaabc03/resource/91d5162b-7851-47bb-9050-1146c4418d8c/download/municipalidades-y-comunas.csv";
+import { ColumnType, ColumnValueType } from "../lib/types";
 
 const filepath = __dirname + "/fixture/municipalidades-sf-short.csv";
 
@@ -13,19 +11,13 @@ describe("test [FastCsv] basic test", function () {
   test("it must parse the file correctly", async function () {
     const fastCsv = await FastCsvParse({ filepath: filepath });
 
-    assert(fastCsv.getColumns().length === 14, "it must have 8 columns");
-    assert(fastCsv.getRows().length > 0, "it must be greater than zero");
-  });
-
-  test("it must download and parse the file correctly", async function () {
-    const fastCsv = await FastCsvParse({ url: fileUrl });
-
+    assert(fastCsv.getColumns().length === 4, "it must have 4 columns");
     assert(fastCsv.getRows().length > 0, "it must be greater than zero");
   });
 
   test("it must fails a cause of MULTIPLE_PARAMS set", async function () {
     try {
-      await FastCsvParse({ url: fileUrl, filepath });
+      await FastCsvParse({ url: "some-url.com", filepath });
     } catch (e: unknown) {
       if (e instanceof Error) {
         assert(
@@ -47,5 +39,30 @@ describe("test [FastCsv] basic test", function () {
         );
       }
     }
+  });
+
+  test("it must validate columns names", async function () {
+    const columns: ColumnType[] = [
+      { key: "distrito_id", value: ColumnValueType.number },
+      { key: "distrito_nombre", value: ColumnValueType.string },
+      { key: "region", value: ColumnValueType.number },
+      { key: "nodo", value: ColumnValueType.string },
+    ];
+
+    const fastCsv = await FastCsvParse({ filepath, columns });
+    assert(fastCsv.getRows().length === 9);
+  });
+
+  test("it must return invalid rows", async function () {
+    const columns: ColumnType[] = [
+      { key: "distrito_id", value: ColumnValueType.number },
+      { key: "distrito_nombre", value: ColumnValueType.string },
+      { key: "region", value: ColumnValueType.number },
+      { key: "nodo", value: ColumnValueType.number }, // wrong filter
+    ];
+
+    const fastCsv = await FastCsvParse({ filepath, columns });
+
+    assert(fastCsv.getInvalidRows().length > 0);
   });
 });

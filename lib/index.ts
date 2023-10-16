@@ -1,58 +1,17 @@
 import fs from "fs";
-import {
-  BREAK_LINE,
-  BUFFER_ENCONDING,
-  BUFFER_SIZE,
-  CSV_CONTENT_TYPE,
-  removeQuotes,
-  sanitizeString,
-} from "./utils/index.utils";
+import { BUFFER_SIZE, columnHeaderValidator } from "./utils/index.utils";
 import https from "https";
-import streamToArray from "stream-to-array";
 import { Readable } from "stream";
 import { ERROR_CODES } from "./utils/errors.utils";
+import { ChunkManager } from "./ChunkManager";
+import { ColumnType } from "./types";
 
 type DefaultValues = {
   chunkSize?: number;
   filepath?: string;
   url?: string;
-};
-
-const download = (url: string): Promise<Buffer> => {
-  return new Promise((resolve, reject) => {
-    https
-      .get(url, (response) => {
-        if (response.statusCode !== 200) {
-          console.error(
-            `error trying to download the file statusCode: ${response.statusCode} message: ${response.statusMessage}`,
-          );
-          reject(new Error(ERROR_CODES.DOWNLOADING));
-          return;
-        }
-
-        if (response.headers?.["content-type"] !== CSV_CONTENT_TYPE) {
-          reject(new Error(ERROR_CODES.CONTENT_TYPE));
-        }
-
-        // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-        const dataChunks: any = [];
-        response.on("data", (chunk) => {
-          dataChunks.push(chunk);
-        });
-
-        response.on("end", () => {
-          resolve(dataChunks);
-        });
-
-        response.on("error", (error) => {
-          reject(error);
-        });
-      })
-      .on("error", (error) => {
-        console.error("Unkown error", error);
-        reject(new Error(ERROR_CODES.UNKNOWN));
-      });
-  });
+  columns?: ColumnType[];
+  isFormat?: () => void;
 };
 
 export default class FastCSV {
@@ -63,8 +22,10 @@ export default class FastCSV {
   private columns: string[] = [];
   private response: string[] = [];
 
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  private content: any;
+  /**
+   * invalid rows, if the row doesn't match with the columns filters this will be added in this array.
+   */
+  private invalid: string[] = [];
 
   constructor(values?: DefaultValues) {
     this.props = { ...values };
@@ -74,90 +35,78 @@ export default class FastCSV {
     return this.columns;
   }
 
-  private setColumns(row: string) {
-    this.columns = removeQuotes(row).split(",");
+  private setColumns(row: string[]) {
+    this.columns = row;
+
+    if (typeof this.props.columns === "undefined") return;
+
+    if (!columnHeaderValidator(this.props.columns, this.columns))
+      throw new Error(ERROR_CODES.COLUMNS_INVALID);
   }
 
-  private async build() {
-    let isFirst = true;
+  private async build(inputReadable: Readable) {
+    const chunkM = new ChunkManager();
 
-    for await (const chunk of this.processCSV(this.content)) {
-      if (isFirst) {
-        this.setColumns(chunk);
-        isFirst = !isFirst;
-      }
-
-      this.response.push(chunk.toString("utf-8"));
+    let validation;
+    if (typeof this.props.columns !== "undefined") {
+      validation = this.props.columns.map((k: ColumnType) => k.value);
     }
+
+    const { columns, rows, invalid } = await chunkM.read(
+      inputReadable,
+      validation,
+    );
+
+    if (columns) {
+      this.setColumns(columns);
+    }
+
+    this.response = rows;
+
+    this.invalid = invalid;
 
     return this;
   }
 
-  private async *processCSV(fileStream: Readable) {
-    let remanentChunk = null;
-
-    for await (const chunk of fileStream) {
-
-      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-      const data: any = remanentChunk
-        ? Buffer.concat([remanentChunk, chunk])
-        : chunk;
-      let startIndex = 0;
-      let endIndex;
-
-      while ((endIndex = data.indexOf(BREAK_LINE, startIndex)) !== -1) {
-        const linea = sanitizeString(
-          data.slice(startIndex, endIndex).toString(BUFFER_ENCONDING),
-        );
-
-        startIndex = endIndex + 1;
-
-        yield linea;
-      }
-
-      remanentChunk = data.slice(startIndex);
-    }
-
-    if (remanentChunk && remanentChunk.length > 0) {
-      yield remanentChunk.toString(BUFFER_ENCONDING);
-    }
-  }
-
-  private async fromPath() {
-    if (this.props.filepath === undefined) {
-      return;
-    }
-
+  private async fromPath(filepath: string) {
     console.info("[FastCsv] -- getting content from file", this.props.filepath);
 
-    const stream = fs.createReadStream(this.props.filepath);
-    this.content = await streamToArray(stream);
+    const stream = fs.createReadStream(filepath);
 
-    return await this.build();
+    return await this.build(stream);
   }
 
-  private async fromURL() {
-    if (this.props.url === undefined) {
-      return;
-    }
+  private async fromURL(url: string) {
+    console.info("[FastCsv] -- getting content from url", url);
 
-    console.info("[FastCsv] -- getting content from url", this.props.url);
+    const response: Readable = await new Promise((resolve, reject) => {
+      const req = https.get(url, resolve);
+      req.on("error", reject);
+    });
 
-    const chunks = await download(this.props.url);
-    this.content = chunks;
-
-    return await this.build();
+    return await this.build(response);
   }
 
   public async process() {
-    await this.fromURL();
-    await this.fromPath();
+    if (this.props.url !== undefined) {
+      return await this.fromURL(this.props.url);
+    }
+
+    if (this.props.filepath !== undefined) {
+      return await this.fromPath(this.props.filepath);
+    }
+
+    console.warn("No method found - verify params");
 
     return this;
   }
 
   public getRows() {
     return this.response;
+  }
+
+  public getInvalidRows() {
+    return this.invalid;
   }
 }
 
@@ -171,5 +120,7 @@ export const FastCsvParse = async (values?: DefaultValues) => {
   }
 
   const fast = new FastCSV(values);
-  return await fast.process();
+  const result = await fast.process();
+
+  return result;
 };

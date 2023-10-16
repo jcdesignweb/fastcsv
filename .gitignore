@@ -3,3 +3,4 @@ dist
 .clinic
 .log
 *-big.csv
+help.txt
