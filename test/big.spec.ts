@@ -13,7 +13,7 @@ const bigFile = __dirname + "/fixture/municipalidades-sf-big.csv";
 // for github building tests
 const shortFile = __dirname + "/fixture/municipalidades-sf-short.csv";
 
-const filepath = !fs.existsSync(bigFile) ? bigFile : shortFile;
+const filepath = fs.existsSync(bigFile) ? bigFile : shortFile;
 
 const memoryUsage = () => {
   // An example displaying the respective memory
