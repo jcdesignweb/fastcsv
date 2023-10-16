@@ -7,7 +7,7 @@ this library uses Async generators to improve the load size in memory
 main features:
 
 - less memory costs
-- fast data types validations. (missing)
+- fast data types validations.
 
 ## Usage/Examples
 
@@ -52,7 +52,7 @@ Run tests
 
 ## Performance metrics
 
-**1M** rows in **957ms** \*without\*\*\*\* filters validations
+**1M** rows in **957ms** without filters validations
 
 **1M** rows in **4000ms** with filters validations
 
@@ -64,3 +64,6 @@ Run tests
 ## Author
 
 Juan Andrés Carmena <juan14nob@gmail.com>
+
+## Help
+Please help me to improve it, if you had a issue, feel able to share it with me to fix it as soon as be possible
