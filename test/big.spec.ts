@@ -3,11 +3,17 @@ import { describe } from "node:test";
 import { test } from "mocha";
 import { ColumnType, ColumnValueType } from "../lib/types";
 import { assert } from "node:console";
+import fs from "node:fs";
 
 /**
  * this file it's too big, I cannot be uploaded into GitHub.
  */
-const filepath = __dirname + "/fixture/municipalidades-sf-big.csv";
+const bigFile = __dirname + "/fixture/municipalidades-sf-big.csv";
+
+// for github building tests
+const shortFile = __dirname + "/fixture/municipalidades-sf-short.csv";
+
+const filepath = !fs.existsSync(bigFile) ? bigFile : shortFile;
 
 const memoryUsage = () => {
   // An example displaying the respective memory
@@ -15,7 +21,7 @@ const memoryUsage = () => {
   for (const [key, value] of Object.entries(process.memoryUsage())) {
     console.log(`Memory usage by ${key}, ${Number(value) / 1000000}MB `);
   }
-}
+};
 
 describe("test [FastCsv] basic test", function () {
   test.skip("it must parse the file correctly with filters", async function () {
@@ -40,15 +46,14 @@ describe("test [FastCsv] basic test", function () {
 
     // An example displaying the respective memory
     // usages in megabytes(MB)
-    memoryUsage()
+    memoryUsage();
   });
 
   test("it must parse the file correctly without filters", async function () {
-
     const fastcsv = await FastCsvParse({ filepath });
 
-    assert(fastcsv.getRows().length === 999999)
+    assert(fastcsv.getRows().length === 999999);
 
-    memoryUsage()
+    memoryUsage();
   });
 });
