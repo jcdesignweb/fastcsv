@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsup ./lib/index.ts --format cjs,esm --dts",
-    "release": "npm run build && changeset publish",
+    "release": "npm run build && changeset publish --access=public",
     "lint": "eslint .",
     "format": "prettier . --write",
     "tests": "ts-mocha -p ./tsconfig.json test/**/*.spec.ts",
