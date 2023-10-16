@@ -1,14 +1,17 @@
 import fs from "fs";
-import { BUFFER_SIZE, removeQuotes } from "./utils/index.utils";
+import { BUFFER_SIZE, columnHeaderValidator } from "./utils/index.utils";
 import https from "https";
 import { Readable } from "stream";
 import { ERROR_CODES } from "./utils/errors.utils";
 import { ChunkManager } from "./ChunkManager";
+import { ColumnType } from "./types";
 
 type DefaultValues = {
   chunkSize?: number;
   filepath?: string;
   url?: string;
+  columns?: ColumnType[];
+  isFormat?: () => void;
 };
 
 export default class FastCSV {
@@ -19,6 +22,11 @@ export default class FastCSV {
   private columns: string[] = [];
   private response: string[] = [];
 
+  /**
+   * invalid rows, if the row doesn't match with the columns filters this will be added in this array.
+   */
+  private invalid: string[] = [];
+
   constructor(values?: DefaultValues) {
     this.props = { ...values };
   }
@@ -27,19 +35,35 @@ export default class FastCSV {
     return this.columns;
   }
 
-  private setColumns(row: string) {
-    this.columns = removeQuotes(row).split(",");
+  private setColumns(row: string[]) {
+    this.columns = row;
+
+    if (typeof this.props.columns === "undefined") return;
+
+    if (!columnHeaderValidator(this.props.columns, this.columns))
+      throw new Error(ERROR_CODES.COLUMNS_INVALID);
   }
 
   private async build(inputReadable: Readable) {
     const chunkM = new ChunkManager();
-    const chunks = await chunkM.read(inputReadable);
 
-    if (chunks[0]) {
-      this.setColumns(chunks[0]);
+    let validation;
+    if (typeof this.props.columns !== "undefined") {
+      validation = this.props.columns.map((k: ColumnType) => k.value);
     }
 
-    this.response = chunks;
+    const { columns, rows, invalid } = await chunkM.read(
+      inputReadable,
+      validation,
+    );
+
+    if (columns) {
+      this.setColumns(columns);
+    }
+
+    this.response = rows;
+
+    this.invalid = invalid;
 
     return this;
   }
@@ -79,6 +103,10 @@ export default class FastCSV {
 
   public getRows() {
     return this.response;
+  }
+
+  public getInvalidRows() {
+    return this.invalid;
   }
 }
 

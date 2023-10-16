@@ -50,6 +50,12 @@ Run tests
   npm test
 ```
 
+## Performance metrics
+
+**1M** rows in **957ms** \*without\*\*\*\* filters validations
+
+**1M** rows in **4000ms** with filters validations
+
 ## Next features
 
 - adding filters

@@ -1,10 +1,10 @@
-"distrito_id","distrito_nombre","region","nodo","categoria","departamento_id","departamento_nombre","domicilio_municipalidad","cod_postal","tel_cod_area","telefono_1","telefono_","email","web"
-"1902","Alcorta","4","Rosario","Comuna","19","ConstitucióñññÑ","Sarmiento 284 ","S2117BPF","3465","470326",,"comunaalcorta@dat1.net.ar",
-"1729","Aarón Castellanos","5","Venado Tuerto","Comu,na","17","General López","Sarmiento 1212 ","S6106XAE","3382","498010","498040","comaaroncastellanos@arnet.com.ar",
-"1621","Albarellos","4","Rosario","Comuna","16","Rosario","Comercio 447 ","S2101AAG","3402","494042","494063","comalbarellos@coopvgg.com.ar",
-"1613","Acebal","4","Rosario","Comuna","16","Rosario","Asurmendi 665 ","S2109ABM","3469","420723","420020","comunaacebal@ri.com.ar",
-"1611","Álvarez","4","Rosario","Comuna","16","Rosario","Moreno 861 ","S2107BEG","3402","461801",,"comalvarez@yahoo.com.ar",
-"1507","Aldao","4","Rosario","Comuna","15","San Lorenzo","Lisandro de la Torre 205 ","S2214AFG","3476","482043","482038","comunadealdao@gmail.com",
-"0810","Aldao (Colonia)","2","Rafaela","Comuna","08","Castellanos","Camino Aldao 085 ","S2317XAB","3491","483037",,"comunacolaldao@coopaldao.com.ar",
-"0706","Aguará Grande","2","Rafaela","Comuna","07","San Cristóbal","Zona urbana S/N","3071","3492","470322",,"aguaragrande@myc-santafe.gov.ar",
-"0403","Alejandra","1","Reconquista","Comuna","04","San Javier","Thomás Moore 1568 ","3051","3405","492107",,"comunalej@csdnet.com.ar",
+"distrito_id","distrito_nombre","region","nodo"
+1902,"Alcorta",4,"Rosario"
+1729,"Aarón Castellanos",5,"Venado Tuerto",
+1621,"Albarellos",4,"Rosario"
+1613,"Acebal",4,"Rosario"
+1611,"Álvarez",4,"Rosario"
+1507,"Aldao",4,"Rosario"
+0810,"Aldao (Colonia)",10002,"Rafaela"
+0706,"Aguará Grande",2,"Rafaela"
+0403,"Alejandra",1,"Reconquista"

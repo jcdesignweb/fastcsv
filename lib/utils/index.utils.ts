@@ -1,3 +1,5 @@
+import { ColumnType } from "../types";
+
 export const CSV_CONTENT_TYPE = "text/csv";
 export const BUFFER_SIZE = 128 * 1024; // 128 KiB
 export const BREAK_LINE = "\n";
@@ -16,9 +18,24 @@ const isValidUrl = (value: string) => {
   return !!urlPattern.test(value);
 };
 
+const columnHeaderValidator = (
+  columnsTypes: ColumnType[],
+  columns: string[],
+): boolean => {
+  if (columnsTypes.length !== columns.length) return false;
+
+  for (let i = 0; i < columns.length; i++) {
+    if (columns[i] !== columnsTypes[i]?.key) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 const sanitizeString = (str: string) =>
   str.replace(/(\r+)|(^\n+)|(\n{2,})|(\n+$)/g, "");
 
 const removeQuotes = (str: string) => str.replace(/['"]+/g, "");
 
-export { isValidUrl, sanitizeString, removeQuotes };
+export { isValidUrl, sanitizeString, removeQuotes, columnHeaderValidator };
