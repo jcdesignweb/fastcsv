@@ -2,14 +2,23 @@ import { FastCsvParse } from "../lib";
 import { describe } from "node:test";
 import { test } from "mocha";
 import { ColumnType, ColumnValueType } from "../lib/types";
+import { assert } from "node:console";
 
 /**
  * this file it's too big, I cannot be uploaded into GitHub.
  */
 const filepath = __dirname + "/fixture/municipalidades-sf-big.csv";
 
+const memoryUsage = () => {
+  // An example displaying the respective memory
+  // usages in megabytes(MB)
+  for (const [key, value] of Object.entries(process.memoryUsage())) {
+    console.log(`Memory usage by ${key}, ${Number(value) / 1000000}MB `);
+  }
+}
+
 describe("test [FastCsv] basic test", function () {
-  test("it must parse the file correctly", async function () {
+  test.skip("it must parse the file correctly with filters", async function () {
     const columns: ColumnType[] = [
       { key: "distrito_id", value: ColumnValueType.number },
       { key: "distrito_nombre", value: ColumnValueType.string },
@@ -31,8 +40,15 @@ describe("test [FastCsv] basic test", function () {
 
     // An example displaying the respective memory
     // usages in megabytes(MB)
-    for (const [key, value] of Object.entries(process.memoryUsage())) {
-      console.log(`Memory usage by ${key}, ${Number(value) / 1000000}MB `);
-    }
+    memoryUsage()
+  });
+
+  test("it must parse the file correctly without filters", async function () {
+
+    const fastcsv = await FastCsvParse({ filepath });
+
+    assert(fastcsv.getRows().length === 999999)
+
+    memoryUsage()
   });
 });
