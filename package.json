@@ -1,6 +1,6 @@
 {
   "name": "@jcarmena/fastcsv",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "TypeScript lib for download and monipulate/control csv files",
   "main": "dist/index.js",
   "module": "dist/index.d.mts",
