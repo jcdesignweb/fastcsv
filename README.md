@@ -1,13 +1,13 @@
 # Fastcsv
 
-CSV to Array library for NodeJS
-you will be able to parse any csv file to get an array.
-this library uses Async generators to improve the load size in memory
+CSV Converter Library to Array for Node.js
+You will be able to parse any csv file to get in a array, at parsing moment this will check data types in columns and rows.
 
 main features:
 
-- less memory costs
+- less costs of memory
 - fast data types validations.
+- get Csv rows from a specific URL.
 
 ## Usage/Examples
 
@@ -65,5 +65,5 @@ Run tests
 
 Juan Andrés Carmena <juan14nob@gmail.com>
 
-## Help
+## Help me!
 Please help me to improve it, if you had a issue, feel able to share it with me to fix it as soon as be possible
